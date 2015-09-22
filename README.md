@@ -2,7 +2,7 @@
 
 This plugin adds some useful aggregations to Elasticsearch.
 
-The `path` aggregation is copied from 
+The `path` aggregation is copied from https://github.com/opendatasoft/elasticsearch-aggregation-pathhierarchy/
 
 ## Versions
 
