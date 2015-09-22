@@ -11,7 +11,6 @@ public interface Path extends MultiBucketsAggregation {
     @Override
     List<Bucket> getBuckets();
 
-    @Override
     Bucket getBucketByKey(String term);
 
     interface Bucket extends MultiBucketsAggregation.Bucket {

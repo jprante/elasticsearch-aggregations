@@ -1,11 +1,14 @@
+#  Aggregation plugin for Elasticsearch 
 
-# More aggregations for Elasticsearch 
+This plugin adds some useful aggregations to Elasticsearch.
+
+The `path` aggregation is copied from 
 
 ## Versions
 
 | Elasticsearch  | Plugin      | Release date |
 | -------------- | ----------- | -------------|
-| 1.5.2          | 1.5.2.0     | Sep 18, 2015 |
+| 1.5.2          | 1.5.2.0     | Sep 22, 2015 |
 
 ## Installation
 
@@ -25,7 +28,7 @@ All feedback is welcome! If you find issues, please post them at [Github](https:
 
 # License
 
-More aggregations plugin for Elasticsearch
+Aggregations plugin for Elasticsearch
 
 Copyright (C) 2015 Jörg Prante
 
