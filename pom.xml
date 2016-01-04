@@ -76,8 +76,6 @@
             <groupId>net.java.dev.jna</groupId>
             <artifactId>jna</artifactId>
             <version>4.1.0</version>
-            <type>jar</type>
-            <scope>test</scope>
         </dependency>
 
         <dependency>
