@@ -61,13 +61,13 @@ public class PathAggregatorFactory extends ValuesSourceAggregatorFactory<ValuesS
     protected Aggregator doCreateInternal(ValuesSource valuesSource, AggregationContext aggregationContext, Aggregator parent,
                                           boolean collectsFromSingleBucket, List<PipelineAggregator> pipelineAggregators, Map<String, Object> metaData)
             throws IOException {
-        logger.info("doCreateInternal value source={} collectsFromSingleBucket={}",
-                valuesSource.toString(), collectsFromSingleBucket);
+//        logger.info("doCreateInternal value source={} collectsFromSingleBucket={}",
+//                valuesSource.toString(), collectsFromSingleBucket);
         if (!collectsFromSingleBucket) {
             return asMultiBucketAggregator(this, aggregationContext, parent);
         }
-        final SortingValues sortingValues = new SortingValues(valuesSource, separator, minDepth, maxDepth);
-        ValuesSource.Bytes valuesSourceBytes = new PathSource(sortingValues);
+//        final SortingValues sortingValues = new SortingValues(valuesSource, separator, minDepth, maxDepth);
+        ValuesSource valuesSourceBytes = new PathSource(valuesSource, separator, minDepth, maxDepth);
         return new PathAggregator(name,
                 factories,
                 valuesSourceBytes,
@@ -81,12 +81,12 @@ public class PathAggregatorFactory extends ValuesSourceAggregatorFactory<ValuesS
 
     private static class SortingValues extends SortingBinaryDocValues {
 
-        private final ValuesSource valuesSource;
+        private final SortedBinaryDocValues valuesSource;
         private final BytesRef separator;
         private final int minDepth;
         private final int maxDepth;
 
-        protected SortingValues(ValuesSource valuesSource, BytesRef separator, int minDepth, int maxDepth) {
+        protected SortingValues(SortedBinaryDocValues valuesSource, BytesRef separator, int minDepth, int maxDepth) {
             this.valuesSource = valuesSource;
             this.separator = separator;
             this.minDepth = minDepth;
@@ -95,74 +95,75 @@ public class PathAggregatorFactory extends ValuesSourceAggregatorFactory<ValuesS
 
         @Override
         public void setDocument(int docId) {
-            try {
-                SortedBinaryDocValues sortedBinaryDocValues = valuesSource.bytesValues(null);
-                sortedBinaryDocValues.setDocument(docId);
-                count = sortedBinaryDocValues.count();
-                grow();
-                int t = 0;
-                for (int i = 0; i < sortedBinaryDocValues.count(); i++) {
-                    int depth = 0;
-                    int lastOff = 0;
-                    BytesRef val = sortedBinaryDocValues.valueAt(i);
-                    BytesRefBuilder cleanVal = new BytesRefBuilder();
-                    for (int off = 0; off < val.length; off++) {
-                        if (new BytesRef(val.bytes, val.offset + off, separator.length).equals(separator)) {
-                            if (off - lastOff > 1) {
-                                if (cleanVal.length() > 0) {
-                                    cleanVal.append(separator);
-                                }
-                                if (minDepth > depth) {
-                                    depth++;
-                                    off += separator.length - 1;
-                                    lastOff = off + 1;
-                                    continue;
-                                }
-                                cleanVal.append(val.bytes, val.offset + lastOff, off - lastOff);
-                                values[t++].copyBytes(cleanVal);
-                                depth++;
-                                if (maxDepth >= 0 && depth > maxDepth) {
-                                    break;
-                                }
-                                off += separator.length - 1;
-                                lastOff = off + 1;
-                                count++;
-                                grow();
-                            } else {
-                                lastOff = off + separator.length;
-                            }
-                        } else if (off == val.length - 1) {
+            valuesSource.setDocument(docId);
+            count = valuesSource.count();
+            grow();
+            int t = 0;
+            for (int i = 0; i < valuesSource.count(); i++) {
+                int depth = 0;
+                int lastOff = 0;
+                BytesRef val = valuesSource.valueAt(i);
+                BytesRefBuilder cleanVal = new BytesRefBuilder();
+                for (int off = 0; off < val.length; off++) {
+                    if (new BytesRef(val.bytes, val.offset + off, separator.length).equals(separator)) {
+                        if (off - lastOff > 1) {
                             if (cleanVal.length() > 0) {
                                 cleanVal.append(separator);
                             }
-                            if (depth >= minDepth) {
-                                cleanVal.append(val.bytes, val.offset + lastOff, off - lastOff + 1);
+                            if (minDepth > depth) {
+                                depth++;
+                                off += separator.length - 1;
+                                lastOff = off + 1;
+                                continue;
                             }
+                            cleanVal.append(val.bytes, val.offset + lastOff, off - lastOff);
+                            values[t++].copyBytes(cleanVal);
+                            depth++;
+                            if (maxDepth >= 0 && depth > maxDepth) {
+                                break;
+                            }
+                            off += separator.length - 1;
+                            lastOff = off + 1;
+                            count++;
+                            grow();
+                        } else {
+                            lastOff = off + separator.length;
+                        }
+                    } else if (off == val.length - 1) {
+                        if (cleanVal.length() > 0) {
+                            cleanVal.append(separator);
+                        }
+                        if (depth >= minDepth) {
+                            cleanVal.append(val.bytes, val.offset + lastOff, off - lastOff + 1);
                         }
                     }
-                    if (maxDepth >= 0 && depth > maxDepth) {
-                        continue;
-                    }
-                    values[t++].copyBytes(cleanVal);
                 }
-                sort();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+                if (maxDepth >= 0 && depth > maxDepth) {
+                    continue;
+                }
+                values[t++].copyBytes(cleanVal);
             }
+            sort();
         }
     }
 
     private static class PathSource extends ValuesSource.Bytes {
 
-        private final SortedBinaryDocValues values;
+        private final ValuesSource values;
+        private final BytesRef separator;
+        private final int minDepth;
+        private final int maxDepth;
 
-        public PathSource(SortedBinaryDocValues values) {
+        public PathSource(ValuesSource values, BytesRef separator, int minDepth, int maxDepth) {
             this.values = values;
+            this.separator = separator;
+            this.minDepth = minDepth;
+            this.maxDepth = maxDepth;
         }
 
         @Override
-        public SortedBinaryDocValues bytesValues(LeafReaderContext context) {
-            return values;
+        public SortedBinaryDocValues bytesValues(LeafReaderContext context) throws IOException {
+            return new SortingValues(values.bytesValues(context), separator, minDepth, maxDepth);
         }
 
     }

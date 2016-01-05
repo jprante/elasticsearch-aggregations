@@ -89,7 +89,7 @@ public class InternalPath
         this.buckets = buckets;
         this.order = order;
         this.separator = separator;
-        logger.info("new: {}", buckets);
+//        logger.info("new: {}", buckets);
     }
 
     @Override
@@ -326,7 +326,7 @@ public class InternalPath
             this.level = level;
             this.path = path;
             this.val = val;
-            logger.info("{} val={}", this, val);
+//            logger.info("{} val={}", this, val);
         }
 
         @Override

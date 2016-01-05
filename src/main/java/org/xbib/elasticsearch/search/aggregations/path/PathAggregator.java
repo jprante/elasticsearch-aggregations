@@ -60,7 +60,7 @@ public class PathAggregator extends BucketsAggregator {
             @Override
             public void collect(int doc, long bucket) throws IOException {
                 assert bucket == 0;
-                logger.info("collect: doc={} bucket={} count={}", doc, bucket, values.count());
+//                logger.info("collect: doc={} bucket={} count={}", doc, bucket, values.count());
                 values.setDocument(doc);
                 final int valuesCount = values.count();
                 previous.clear();
@@ -100,7 +100,7 @@ public class PathAggregator extends BucketsAggregator {
             spare.path = Arrays.copyOf(paths, paths.length - 1);
             buckets.add(spare);
         }
-        logger.info("buildAggregation {}", owningBucketOrdinal);
+//        logger.info("buildAggregation {}", owningBucketOrdinal);
         return new InternalPath(name, pipelineAggregators(), metaData(), buckets, order, separator);
     }
 
