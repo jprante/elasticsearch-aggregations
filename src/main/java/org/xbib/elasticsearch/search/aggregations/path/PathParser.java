@@ -32,6 +32,7 @@ public class PathParser implements Aggregator.Parser {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public AggregatorFactory parse(String aggregationName, XContentParser parser, SearchContext context) throws IOException {
         ValuesSourceParser vsParser = ValuesSourceParser.any(aggregationName, InternalPath.TYPE, context).scriptable(true).build();
         String separator = DEFAULT_SEPARATOR;

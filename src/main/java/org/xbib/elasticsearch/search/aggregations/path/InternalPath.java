@@ -5,8 +5,6 @@ import org.apache.lucene.util.CollectionUtil;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.common.io.stream.Streamable;
-import org.elasticsearch.common.logging.ESLogger;
-import org.elasticsearch.common.logging.ESLoggerFactory;
 import org.elasticsearch.common.xcontent.ToXContent;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.search.aggregations.AggregationStreams;
@@ -32,8 +30,6 @@ import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 public class InternalPath
         extends InternalMultiBucketAggregation<InternalPath,InternalPath.Bucket>
         implements Path, ToXContent, Streamable {
-
-    private final static ESLogger logger = ESLoggerFactory.getLogger(InternalPath.class.getName());
 
     public static final Type TYPE = new Type("path");
 
@@ -89,7 +85,6 @@ public class InternalPath
         this.buckets = buckets;
         this.order = order;
         this.separator = separator;
-//        logger.info("new: {}", buckets);
     }
 
     @Override
@@ -109,6 +104,7 @@ public class InternalPath
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public List<Path.Bucket> getBuckets() {
         Object o = buckets;
         return (List<Path.Bucket>) o;
@@ -142,9 +138,9 @@ public class InternalPath
                 existingBuckets.add(bucket);
             }
         }
-        List<InternalPath.Bucket> reduced = (buckets != null) ?
-                new ArrayList<>(buckets.size()) :
-                new ArrayList<>();
+        List<InternalPath.Bucket> reduced = buckets != null ?
+                new ArrayList<InternalPath.Bucket>(buckets.size()) :
+                new ArrayList<InternalPath.Bucket>();
         if (buckets != null) {
             for (Map.Entry<BytesRef, List<InternalPath.Bucket>> entry : buckets.entrySet()) {
                 List<InternalPath.Bucket> sameCellBuckets = entry.getValue();
@@ -235,16 +231,16 @@ public class InternalPath
         byte id = in.readByte();
         switch (id) {
             case 1:
-                order = (Order) Order.KEY_ASC;
+                order = Order.KEY_ASC;
                 break;
             case 2:
-                order = (Order) Order.KEY_DESC;
+                order = Order.KEY_DESC;
                 break;
             case 3:
-                order = (Order) Order.COUNT_ASC;
+                order = Order.COUNT_ASC;
                 break;
             case 4:
-                order = (Order) Order.COUNT_DESC;
+                order = Order.COUNT_DESC;
                 break;
             case 0:
                 boolean asc = in.readBoolean();
@@ -326,7 +322,6 @@ public class InternalPath
             this.level = level;
             this.path = path;
             this.val = val;
-//            logger.info("{} val={}", this, val);
         }
 
         @Override

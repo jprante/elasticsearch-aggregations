@@ -5,7 +5,6 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.common.logging.ESLogger;
 import org.elasticsearch.common.logging.ESLoggerFactory;
 import org.junit.Test;
-import org.xbib.elasticsearch.helper.AbstractNodesTestHelper;
 import org.xbib.elasticsearch.search.aggregations.path.Path;
 import org.xbib.elasticsearch.search.aggregations.path.PathBuilder;
 
@@ -19,7 +18,7 @@ import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class PathAggregationTests extends AbstractNodesTestHelper {
+public class PathAggregationTests extends NodeTestUtils {
 
     private final static ESLogger logger = ESLoggerFactory.getLogger("test");
 

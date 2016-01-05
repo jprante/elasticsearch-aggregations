@@ -9,6 +9,8 @@
         <dependencySet>
             <outputDirectory>/</outputDirectory>
             <useProjectArtifact>true</useProjectArtifact>
+            <useTransitiveFiltering>false</useTransitiveFiltering>
+            <useTransitiveDependencies>false</useTransitiveDependencies>
             <unpack>false</unpack>
             <scope>compile</scope>
             <includes>
@@ -18,7 +20,7 @@
     </dependencySets>
     <files>
         <file>
-            <source>${basedir}/src/main/resources/plugin-descriptor.properties</source>
+            <source>${basedir}/src/main/templates/plugin-descriptor.properties</source>
             <outputDirectory>/</outputDirectory>
             <filtered>true</filtered>
         </file>

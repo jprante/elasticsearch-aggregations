@@ -6,20 +6,18 @@ import org.elasticsearch.search.aggregations.Aggregator;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.junit.Before;
 import org.junit.Test;
-import org.xbib.elasticsearch.helper.AbstractNodesTestHelper;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.elasticsearch.search.aggregations.AggregationBuilders.terms;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertNotNull;
 
-import static org.hamcrest.Matchers.equalTo;
-
-public class StringTermsAggregationTests extends AbstractNodesTestHelper {
+public class StringTermsAggregationTests extends NodeTestUtils {
 
     private static final String SINGLE_VALUED_FIELD_NAME = "s_value";
 
@@ -58,9 +56,9 @@ public class StringTermsAggregationTests extends AbstractNodesTestHelper {
             Terms.Bucket bucket = terms.getBucketByKey("val" + i);
             assertThat(bucket, notNullValue());
             assertThat(bucket.getKeyAsString(), equalTo("val" + i));
-            assertThat(bucket.getDocCount(), equalTo(1l));
-            assertThat(propertiesKeys[i], equalTo("val" + i));
-            assertThat(propertiesDocCounts[i], equalTo(1l));
+            assertThat(bucket.getDocCount(), equalTo(1L));
+            assertThat(propertiesKeys[i].toString(), equalTo("val" + i));
+            assertThat(propertiesDocCounts[i].toString(), equalTo("1"));
         }
     }
 }

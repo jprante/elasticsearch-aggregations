@@ -4,8 +4,6 @@ import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.BytesRefBuilder;
 import org.elasticsearch.common.lease.Releasables;
-import org.elasticsearch.common.logging.ESLogger;
-import org.elasticsearch.common.logging.ESLoggerFactory;
 import org.elasticsearch.common.util.BytesRefHash;
 import org.elasticsearch.index.fielddata.SortedBinaryDocValues;
 import org.elasticsearch.search.aggregations.Aggregator;
@@ -26,8 +24,6 @@ import java.util.regex.Pattern;
 
 public class PathAggregator extends BucketsAggregator {
 
-    private final static ESLogger logger = ESLoggerFactory.getLogger(PathAggregator.class.getName());
-
     private final ValuesSource valuesSource;
     private final BytesRefHash bucketOrds;
     private final BytesRef separator;
@@ -47,7 +43,6 @@ public class PathAggregator extends BucketsAggregator {
         this.bucketOrds = new BytesRefHash(1, context.bigArrays());
         this.separator = separator;
         this.order = order;
-        logger.info("new: {}", name);
     }
 
     @Override
@@ -100,13 +95,12 @@ public class PathAggregator extends BucketsAggregator {
             spare.path = Arrays.copyOf(paths, paths.length - 1);
             buckets.add(spare);
         }
-//        logger.info("buildAggregation {}", owningBucketOrdinal);
         return new InternalPath(name, pipelineAggregators(), metaData(), buckets, order, separator);
     }
 
     @Override
     public InternalPath buildEmptyAggregation() {
-        return new InternalPath(name, pipelineAggregators(), metaData(), new ArrayList<>(), order, separator);
+        return new InternalPath(name, pipelineAggregators(), metaData(), new ArrayList<InternalPath.Bucket>(), order, separator);
     }
 
     @Override

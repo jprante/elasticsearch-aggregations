@@ -8,13 +8,18 @@ The `path` aggregation is copied from https://github.com/opendatasoft/elasticsea
 
 | Elasticsearch  | Plugin      | Release date |
 | -------------- | ----------- | -------------|
+| 2.1.1          | 2.1.1.0     | Jan  5, 2016 |
 | 1.5.2          | 1.5.2.0     | Sep 22, 2015 |
 
 ## Installation
 
-```
-./bin/plugin -install aggregations -url http://xbib.org/repository/org/xbib/elasticsearch/plugin/elasticsearch-aggregations/1.5.2.0/elasticsearch-aggregations-1.5.2.0-plugin.zip
-```
+### Elasticsearch 2.x
+
+    ./bin/plugin install http://xbib.org/repository/org/xbib/elasticsearch/plugin/elasticsearch-aggregations/2.1.1.0/elasticsearch-aggregations-2.1.1.0-plugin.zip
+
+### Elasticsearch 1.x
+
+    ./bin/plugin -install aggregations -url http://xbib.org/repository/org/xbib/elasticsearch/plugin/elasticsearch-aggregations/1.5.2.0/elasticsearch-aggregations-1.5.2.0-plugin.zip
 
 Do not forget to restart the node after installing.
 

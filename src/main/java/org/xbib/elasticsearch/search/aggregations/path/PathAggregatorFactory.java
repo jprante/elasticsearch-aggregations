@@ -49,7 +49,7 @@ public class PathAggregatorFactory extends ValuesSourceAggregatorFactory<ValuesS
                                         Aggregator parent,
                                         List<PipelineAggregator> pipelineAggregators,
                                         Map<String, Object> metaData) throws IOException {
-        final InternalAggregation aggregation = new InternalPath(name, pipelineAggregators, metaData, new ArrayList<>(), order, separator);
+        final InternalAggregation aggregation = new InternalPath(name, pipelineAggregators, metaData, new ArrayList<InternalPath.Bucket>(), order, separator);
         return new NonCollectingAggregator(name, aggregationContext, parent, factories, pipelineAggregators, metaData) {
             public InternalAggregation buildEmptyAggregation() {
                 return aggregation;
@@ -61,12 +61,9 @@ public class PathAggregatorFactory extends ValuesSourceAggregatorFactory<ValuesS
     protected Aggregator doCreateInternal(ValuesSource valuesSource, AggregationContext aggregationContext, Aggregator parent,
                                           boolean collectsFromSingleBucket, List<PipelineAggregator> pipelineAggregators, Map<String, Object> metaData)
             throws IOException {
-//        logger.info("doCreateInternal value source={} collectsFromSingleBucket={}",
-//                valuesSource.toString(), collectsFromSingleBucket);
         if (!collectsFromSingleBucket) {
             return asMultiBucketAggregator(this, aggregationContext, parent);
         }
-//        final SortingValues sortingValues = new SortingValues(valuesSource, separator, minDepth, maxDepth);
         ValuesSource valuesSourceBytes = new PathSource(valuesSource, separator, minDepth, maxDepth);
         return new PathAggregator(name,
                 factories,
