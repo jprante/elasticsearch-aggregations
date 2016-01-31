@@ -72,7 +72,7 @@ public class PathParser implements Aggregator.Parser {
                 }
             }
         }
-        if (minDepth > maxDepth) {
+        if (minDepth > 0 && maxDepth > 0 && minDepth > maxDepth) {
             throw new ElasticsearchException("min_depth paramater must be lower than max_depth parameter");
         }
         return new PathAggregatorFactory(aggregationName, vsParser.config(), new BytesRef(separator), minDepth, maxDepth, order);

@@ -288,7 +288,9 @@ public class InternalPath
                     builder.endObject();
                 }
             }
-            doXContentInternal(builder, params, nextBucket, bucketIterator);
+            if (currentBucket != nextBucket) {
+                doXContentInternal(builder, params, nextBucket, bucketIterator);
+            }
         } else {
             if (bucket.level > 0) {
                 builder.endObject();

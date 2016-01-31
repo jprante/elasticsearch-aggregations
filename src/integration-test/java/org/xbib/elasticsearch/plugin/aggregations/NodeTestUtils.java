@@ -24,7 +24,7 @@ public class NodeTestUtils {
         Settings nodeSettings = Settings.settingsBuilder()
                 .put("path.home", System.getProperty("path.home"))
                 .put("client.type", "node")
-                .put("index.number_of_shards", 1)
+                .put("index.number_of_shards", 5)
                 .put("index.number_of_replica", 0)
                 .build();
         // ES 2.1 renders NodeBuilder as useless

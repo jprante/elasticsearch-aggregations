@@ -21,7 +21,6 @@ public class StringTermsAggregationTests extends NodeTestUtils {
 
     private static final String SINGLE_VALUED_FIELD_NAME = "s_value";
 
-
     @Before
     public void setup() throws Exception {
         List<IndexRequestBuilder> builders = new ArrayList<>();
@@ -41,8 +40,7 @@ public class StringTermsAggregationTests extends NodeTestUtils {
         SearchResponse response = client("1")
                 .prepareSearch("idx")
                 .setTypes("type")
-                .addAggregation(
-                        terms("terms").field(SINGLE_VALUED_FIELD_NAME)
+                .addAggregation(terms("terms").field(SINGLE_VALUED_FIELD_NAME)
                                 .collectMode(Aggregator.SubAggCollectionMode.BREADTH_FIRST)).execute().actionGet();
         assertNotNull(response);
         Terms terms = response.getAggregations().get("terms");

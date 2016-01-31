@@ -41,7 +41,6 @@ public class PathAggregatorFactory extends ValuesSourceAggregatorFactory<ValuesS
         this.minDepth = minDepth;
         this.maxDepth = maxDepth;
         this.order = order;
-        logger.info("new name={} sep={}", name, separator);
     }
 
     @Override

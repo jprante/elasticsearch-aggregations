@@ -20,8 +20,6 @@ import static org.junit.Assert.assertTrue;
 
 public class PathAggregationTests extends NodeTestUtils {
 
-    private final static ESLogger logger = ESLoggerFactory.getLogger("test");
-
     private static final String PATH_FIELD_NAME = "path";
     private static final String VIEWS_FIELD_NAME = "views";
 
@@ -55,7 +53,6 @@ public class PathAggregationTests extends NodeTestUtils {
                         .separator("/")
                 ).execute().actionGet();
         Path path = response.getAggregations().get("path");
-        logger.info("path={}", path);
         List<Path.Bucket> buckets = path.getBuckets();
         assertTrue(buckets.size() > 0);
 
