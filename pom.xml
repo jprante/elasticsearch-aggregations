@@ -62,8 +62,8 @@
         <elasticsearch.version>2.1.1</elasticsearch.version>
         <descriptor.javaVersion>${java.version}</descriptor.javaVersion>
         <descriptor.elasticsearchVersion>${elasticsearch.version}</descriptor.elasticsearchVersion>
-        <descriptor.classname>org.xbib.elasticsearch.plugin.bundle.BundlePlugin</descriptor.classname>
-        <descriptor.name>bundle</descriptor.name>
+        <descriptor.classname>org.xbib.elasticsearch.plugin.aggregations.AggregationPlugin</descriptor.classname>
+        <descriptor.name>aggregation-pathhierarchy</descriptor.name>
         <descriptor.description>${project.description}</descriptor.description>
         <descriptor.jvm>true</descriptor.jvm>
         <descriptor.isolated>true</descriptor.isolated>
