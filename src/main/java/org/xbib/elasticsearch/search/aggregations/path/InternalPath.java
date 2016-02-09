@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
@@ -268,39 +269,47 @@ public class InternalPath
 
     private void doXContentInternal(XContentBuilder builder, Params params, Path.Bucket currentBucket,
                                     Iterator<? extends Path.Bucket> bucketIterator) throws IOException {
-        builder.startObject();
-        builder.field(CommonFields.KEY, ((Bucket) currentBucket).val);
-        builder.field(CommonFields.DOC_COUNT, currentBucket.getDocCount());
-        ((InternalAggregations) currentBucket.getAggregations()).toXContentInternal(builder, params);
-        Bucket bucket = (Bucket) currentBucket;
-        if (bucketIterator.hasNext()) {
-            Bucket nextBucket = (Bucket) bucketIterator.next();
-            if (nextBucket.level == bucket.level) {
-                builder.endObject();
-            } else if (nextBucket.level > bucket.level) {
-                builder.startObject(name);
-                builder.startArray(CommonFields.BUCKETS);
-            } else {
-                builder.endObject();
-                for (int i = bucket.level; i > nextBucket.level; i--) {
-                    builder.endArray();
+        Stack<Path.Bucket> bucketStack = new Stack<>();
+        bucketStack.push(currentBucket);
+
+        while(!bucketStack.empty()){
+            currentBucket = bucketStack.pop();
+
+            builder.startObject();
+            builder.field(CommonFields.KEY, ((Bucket) currentBucket).val);
+            builder.field(CommonFields.DOC_COUNT, currentBucket.getDocCount());
+            ((InternalAggregations) currentBucket.getAggregations()).toXContentInternal(builder, params);
+
+            Bucket bucket = (Bucket) currentBucket;
+            if (bucketIterator.hasNext()) {
+                Bucket nextBucket = (Bucket) bucketIterator.next();
+                if (nextBucket.level == bucket.level) {
                     builder.endObject();
+                } else if (nextBucket.level > bucket.level) {
+                    builder.startObject(name);
+                    builder.startArray(CommonFields.BUCKETS);
+                } else {
+                    builder.endObject();
+                    for (int i = bucket.level; i > nextBucket.level; i--) {
+                        builder.endArray();
+                        builder.endObject();
+                        builder.endObject();
+                    }
+                }
+                if (currentBucket != nextBucket) {
+                    bucketStack.push(nextBucket);
+                }
+            } else {
+                if (bucket.level > 0) {
+                    builder.endObject();
+                    for (int i = bucket.level; i > 0; i--) {
+                        builder.endArray();
+                        builder.endObject();
+                        builder.endObject();
+                    }
+                } else {
                     builder.endObject();
                 }
-            }
-            if (currentBucket != nextBucket) {
-                doXContentInternal(builder, params, nextBucket, bucketIterator);
-            }
-        } else {
-            if (bucket.level > 0) {
-                builder.endObject();
-                for (int i = bucket.level; i > 0; i--) {
-                    builder.endArray();
-                    builder.endObject();
-                    builder.endObject();
-                }
-            } else {
-                builder.endObject();
             }
         }
     }
