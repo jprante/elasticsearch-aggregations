@@ -170,7 +170,7 @@ public class InternalPath
 
     private List<InternalPath.Bucket> createBucketListFromMap(Map<String, List<InternalPath.Bucket>> buckets) {
         List<InternalPath.Bucket> res = new ArrayList<>();
-        if (buckets.size() > 0) {
+        if (!buckets.isEmpty()) {
             List<InternalPath.Bucket> rootList = buckets.get(separator.utf8ToString());
             createBucketListFromMapRecurse(res, buckets, rootList);
         }
@@ -430,10 +430,8 @@ public class InternalPath
 
         @Override
         public String toString() {
-            XContentBuilder builder;
             try {
-                builder = jsonBuilder();
-                return toXContent(builder, ToXContent.EMPTY_PARAMS).string();
+                return toXContent(jsonBuilder(), ToXContent.EMPTY_PARAMS).string();
             } catch (Exception e) {
                 return "?";
             }

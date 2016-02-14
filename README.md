@@ -8,6 +8,7 @@ The `path` aggregation is copied from https://github.com/opendatasoft/elasticsea
 
 | Elasticsearch  | Plugin      | Release date |
 | -------------- | ----------- | -------------|
+| 2.1.1          | 2.1.1.2     | Feb 14, 2016 |
 | 2.1.1          | 2.1.1.1     | Jan 31, 2016 |
 | 2.1.1          | 2.1.1.0     | Jan  5, 2016 |
 | 1.5.2          | 1.5.2.0     | Sep 22, 2015 |

@@ -70,7 +70,7 @@ public class SimpleAggregationTest extends NodeTestUtils {
         searchRequestBuilder.setQuery(QueryBuilders.constantScoreQuery(matchAllQuery()))
                 .addAggregation(new PathBuilder("subject")
                         .field("subject")
-                        .maxDepth(0)
+                        .maxDepth(2)
                         .separator("/")
                         .order(Path.Order.KEY_DESC)
                 );
