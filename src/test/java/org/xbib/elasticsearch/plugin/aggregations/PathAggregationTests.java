@@ -2,8 +2,6 @@ package org.xbib.elasticsearch.plugin.aggregations;
 
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.common.logging.ESLogger;
-import org.elasticsearch.common.logging.ESLoggerFactory;
 import org.junit.Test;
 import org.xbib.elasticsearch.search.aggregations.path.Path;
 import org.xbib.elasticsearch.search.aggregations.path.PathBuilder;
@@ -18,6 +16,9 @@ import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+/**
+ *
+ */
 public class PathAggregationTests extends NodeTestUtils {
 
     private static final String PATH_FIELD_NAME = "path";
@@ -25,21 +26,21 @@ public class PathAggregationTests extends NodeTestUtils {
 
     @Test
     public void testPath() throws IOException {
-        client("1").admin().indices().prepareCreate("idx")
+        client().admin().indices().prepareCreate("idx")
                 .addMapping("path", PATH_FIELD_NAME, "type=string,index=not_analyzed")
                 .execute().actionGet();
         List<IndexRequestBuilder> builders = new ArrayList<>();
-        builders.add(client("1").prepareIndex("idx", "path").setSource(jsonBuilder()
+        builders.add(client().prepareIndex("idx", "path").setSource(jsonBuilder()
                 .startObject()
                 .field(PATH_FIELD_NAME, "/My documents/Spreadsheets/Budget_2013.xls")
                 .field(VIEWS_FIELD_NAME, 10)
                 .endObject()));
-        builders.add(client("1").prepareIndex("idx", "path").setSource(jsonBuilder()
+        builders.add(client().prepareIndex("idx", "path").setSource(jsonBuilder()
                 .startObject()
                 .field(PATH_FIELD_NAME, "/My documents/Spreadsheets/Budget_2014.xls")
                 .field(VIEWS_FIELD_NAME, 7)
                 .endObject()));
-        builders.add(client("1").prepareIndex("idx", "path").setSource(jsonBuilder()
+        builders.add(client().prepareIndex("idx", "path").setSource(jsonBuilder()
                 .startObject()
                 .field(PATH_FIELD_NAME, "/My documents/Test.txt")
                 .field(VIEWS_FIELD_NAME, 1)
@@ -47,7 +48,7 @@ public class PathAggregationTests extends NodeTestUtils {
         for (IndexRequestBuilder builder : builders) {
             builder.setRefresh(true).execute().actionGet();
         }
-        SearchResponse response = client("1").prepareSearch("idx").setTypes("path")
+        SearchResponse response = client().prepareSearch("idx").setTypes("path")
                 .addAggregation(new PathBuilder("path")
                         .field(PATH_FIELD_NAME)
                         .separator("/")
@@ -64,7 +65,7 @@ public class PathAggregationTests extends NodeTestUtils {
         expectedDocCountsForPath.put("My documents/Test.txt", 1L);
 
         for (Path.Bucket bucket: buckets) {
-            Long l1 = expectedDocCountsForPath.get(bucket.getKey());
+            Long l1 = expectedDocCountsForPath.get((String)bucket.getKey());
             Long l2 = bucket.getDocCount();
             assertEquals(l1, l2);
         }

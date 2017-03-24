@@ -20,7 +20,7 @@ public class NodeTestUtils {
     private Node node;
     private Client client;
 
-    public static Node createNode() {
+    private static Node createNode() {
         Settings nodeSettings = Settings.settingsBuilder()
                 .put("path.home", System.getProperty("path.home"))
                 .put("client.type", "node")
@@ -33,7 +33,7 @@ public class NodeTestUtils {
         return node;
     }
 
-    public static void releaseNode(Node node) throws IOException {
+    private static void releaseNode(Node node) throws IOException {
         if (node != null) {
             node.close();
             deleteFiles();
@@ -46,7 +46,7 @@ public class NodeTestUtils {
         client = node.client();
     }
 
-    protected Client client(String id) {
+    Client client() {
         return client;
     }
 

@@ -17,6 +17,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertNotNull;
 
+/**
+ *
+ */
 public class StringTermsAggregationTests extends NodeTestUtils {
 
     private static final String SINGLE_VALUED_FIELD_NAME = "s_value";
@@ -25,7 +28,7 @@ public class StringTermsAggregationTests extends NodeTestUtils {
     public void setup() throws Exception {
         List<IndexRequestBuilder> builders = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            builders.add(client("1").prepareIndex("idx", "type").setSource(
+            builders.add(client().prepareIndex("idx", "type").setSource(
                     jsonBuilder().startObject().field(SINGLE_VALUED_FIELD_NAME, "val" + i).field("i", i)
                             .field("tag", i < 5 / 2 + 1 ? "more" : "less")
                             .endObject()));
@@ -37,7 +40,7 @@ public class StringTermsAggregationTests extends NodeTestUtils {
 
     @Test
     public void testStringTerms() {
-        SearchResponse response = client("1")
+        SearchResponse response = client()
                 .prepareSearch("idx")
                 .setTypes("type")
                 .addAggregation(terms("terms").field(SINGLE_VALUED_FIELD_NAME)

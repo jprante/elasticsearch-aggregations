@@ -5,6 +5,9 @@ import org.elasticsearch.search.aggregations.AggregationBuilder;
 
 import java.io.IOException;
 
+/**
+ *
+ */
 public class PathBuilder extends AggregationBuilder<PathBuilder> {
 
     private String separator = PathParser.DEFAULT_SEPARATOR;

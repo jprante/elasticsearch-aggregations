@@ -5,6 +5,9 @@ import org.elasticsearch.search.SearchModule;
 import org.xbib.elasticsearch.search.aggregations.path.InternalPath;
 import org.xbib.elasticsearch.search.aggregations.path.PathParser;
 
+/**
+ *
+ */
 public class AggregationPlugin extends Plugin {
 
     @Override
@@ -22,4 +25,3 @@ public class AggregationPlugin extends Plugin {
         InternalPath.registerStreams();
     }
 }
-

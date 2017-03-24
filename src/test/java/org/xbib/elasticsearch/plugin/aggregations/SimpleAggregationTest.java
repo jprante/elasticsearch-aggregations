@@ -16,20 +16,30 @@ import org.junit.Test;
 import org.xbib.elasticsearch.search.aggregations.path.Path;
 import org.xbib.elasticsearch.search.aggregations.path.PathBuilder;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.Iterator;
+import java.util.List;
 
 import static org.elasticsearch.client.Requests.indexRequest;
 import static org.elasticsearch.client.Requests.refreshRequest;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
+import static org.junit.Assert.assertEquals;
 
+/**
+ *
+ */
 public class SimpleAggregationTest extends NodeTestUtils {
 
     private final static ESLogger logger = ESLoggerFactory.getLogger(SimpleAggregationTest.class.getName());
 
     @Test
     public void simpleTest() throws IOException {
-        Client client = client("1");
+        Client client = client();
 
         CreateIndexRequestBuilder createIndexRequestBuilder = new CreateIndexRequestBuilder(client, CreateIndexAction.INSTANCE, "test");
         Settings settings = Settings.builder()
@@ -66,7 +76,7 @@ public class SimpleAggregationTest extends NodeTestUtils {
         client.bulk(builder.request()).actionGet();
         client.admin().indices().refresh(refreshRequest()).actionGet();
 
-        SearchRequestBuilder searchRequestBuilder = new SearchRequestBuilder(client("1"), SearchAction.INSTANCE);
+        SearchRequestBuilder searchRequestBuilder = new SearchRequestBuilder(client(), SearchAction.INSTANCE);
         searchRequestBuilder.setQuery(QueryBuilders.constantScoreQuery(matchAllQuery()))
                 .addAggregation(new PathBuilder("subject")
                         .field("subject")
@@ -77,8 +87,14 @@ public class SimpleAggregationTest extends NodeTestUtils {
 
         SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
         Path path = searchResponse.getAggregations().get("subject");
-        for (Path.Bucket bucket : path.getBuckets()) {
-            logger.info("bucket={}", bucket);
+        List<Path.Bucket> buckets = path.getBuckets();
+        Iterator<Path.Bucket> iterator = buckets.iterator();
+        InputStream inputStream = getClass().getClassLoader().getResource("path-aggs.txt").openStream();
+        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                assertEquals(line, iterator.next().toString());
+            }
         }
     }
 }

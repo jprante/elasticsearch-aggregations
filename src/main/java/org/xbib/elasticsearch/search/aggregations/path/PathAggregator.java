@@ -22,6 +22,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+/**
+ *
+ */
 public class PathAggregator extends BucketsAggregator {
 
     private final ValuesSource valuesSource;
@@ -29,15 +32,15 @@ public class PathAggregator extends BucketsAggregator {
     private final BytesRef separator;
     private final Path.Order order;
 
-    public PathAggregator(String name,
-                          AggregatorFactories factories,
-                          ValuesSource valuesSource,
-                          AggregationContext context,
-                          Aggregator parent,
-                          List<PipelineAggregator> pipelineAggregators,
-                          Map<String, Object> metaData,
-                          BytesRef separator,
-                          Path.Order order) throws IOException {
+    PathAggregator(String name,
+                   AggregatorFactories factories,
+                   ValuesSource valuesSource,
+                   AggregationContext context,
+                   Aggregator parent,
+                   List<PipelineAggregator> pipelineAggregators,
+                   Map<String, Object> metaData,
+                   BytesRef separator,
+                   Path.Order order) throws IOException {
         super(name, factories, context, parent, pipelineAggregators, metaData);
         this.valuesSource = valuesSource;
         this.bucketOrds = new BytesRefHash(1, context.bigArrays());
@@ -54,8 +57,6 @@ public class PathAggregator extends BucketsAggregator {
 
             @Override
             public void collect(int doc, long bucket) throws IOException {
-                assert bucket == 0;
-//                logger.info("collect: doc={} bucket={} count={}", doc, bucket, values.count());
                 values.setDocument(doc);
                 final int valuesCount = values.count();
                 previous.clear();
@@ -79,7 +80,6 @@ public class PathAggregator extends BucketsAggregator {
 
     @Override
     public InternalPath buildAggregation(long owningBucketOrdinal) throws IOException {
-        assert owningBucketOrdinal == 0;
         List<InternalPath.Bucket> buckets = new ArrayList<>();
         InternalPath.Bucket spare;
         for (long i = 0; i < bucketOrds.size(); i++) {

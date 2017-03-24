@@ -28,13 +28,16 @@ import java.util.Stack;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
+/**
+ *
+ */
 public class InternalPath
         extends InternalMultiBucketAggregation<InternalPath,InternalPath.Bucket>
         implements Path, ToXContent, Streamable {
 
-    public static final Type TYPE = new Type("path");
+    static final Type TYPE = new Type("path");
 
-    protected Map<BytesRef, Path.Bucket> bucketMap;
+    private Map<BytesRef, Path.Bucket> bucketMap;
 
     private List<InternalPath.Bucket> buckets;
 
@@ -42,13 +45,10 @@ public class InternalPath
 
     private BytesRef separator;
 
-    public static final AggregationStreams.Stream STREAM = new AggregationStreams.Stream() {
-        @Override
-        public InternalPath readResult(StreamInput in) throws IOException {
-            InternalPath buckets = new InternalPath();
-            buckets.readFrom(in);
-            return buckets;
-        }
+    private static final AggregationStreams.Stream STREAM = in -> {
+        InternalPath buckets = new InternalPath();
+        buckets.readFrom(in);
+        return buckets;
     };
 
     private final static BucketStreams.Stream<Bucket> BUCKET_STREAM = new BucketStreams.Stream<Bucket>() {
@@ -73,15 +73,15 @@ public class InternalPath
         BucketStreams.registerStream(BUCKET_STREAM, TYPE.stream());
     }
 
-    InternalPath() {
+    private InternalPath() {
     }
 
-    public InternalPath(String name,
-                           List<PipelineAggregator> pipelineAggregators,
-                           Map<String, Object> metaData,
-                           List<InternalPath.Bucket> buckets,
-                           Path.Order order,
-                           BytesRef separator) {
+    InternalPath(String name,
+                 List<PipelineAggregator> pipelineAggregators,
+                 Map<String, Object> metaData,
+                 List<InternalPath.Bucket> buckets,
+                 Path.Order order,
+                 BytesRef separator) {
         super(name, pipelineAggregators, metaData);
         this.buckets = buckets;
         this.order = order;
@@ -131,17 +131,13 @@ public class InternalPath
                 buckets = new HashMap<>();
             }
             for (InternalPath.Bucket bucket : p.buckets) {
-                List<InternalPath.Bucket> existingBuckets = buckets.get(bucket.termBytes);
-                if (existingBuckets == null) {
-                    existingBuckets = new ArrayList<>(aggregations.size());
-                    buckets.put(bucket.termBytes, existingBuckets);
-                }
+                List<InternalPath.Bucket> existingBuckets =
+                        buckets.computeIfAbsent(bucket.termBytes, k -> new ArrayList<>(aggregations.size()));
                 existingBuckets.add(bucket);
             }
         }
         List<InternalPath.Bucket> reduced = buckets != null ?
-                new ArrayList<InternalPath.Bucket>(buckets.size()) :
-                new ArrayList<InternalPath.Bucket>();
+                new ArrayList<>(buckets.size()) : new ArrayList<>();
         if (buckets != null) {
             for (Map.Entry<BytesRef, List<InternalPath.Bucket>> entry : buckets.entrySet()) {
                 List<InternalPath.Bucket> sameCellBuckets = entry.getValue();
@@ -316,17 +312,17 @@ public class InternalPath
 
     static class Bucket extends InternalMultiBucketAggregation.InternalBucket implements Path.Bucket {
 
-        protected long docCount;
         protected InternalAggregations aggregations;
-        protected int level;
         protected String[] path;
-        protected String val;
+        long docCount;
+        int level;
+        String val;
         BytesRef termBytes;
 
-        public Bucket() {
+        Bucket() {
         }
 
-        public Bucket(String val, BytesRef term, long docCount, InternalAggregations aggregations, int level, String[] path) {
+        Bucket(String val, BytesRef term, long docCount, InternalAggregations aggregations, int level, String[] path) {
             this.termBytes = term;
             this.docCount = docCount;
             this.aggregations = aggregations;
@@ -365,7 +361,7 @@ public class InternalPath
             return null;
         }
 
-        public InternalPath.Bucket reduce(List<InternalPath.Bucket> buckets, ReduceContext reduceContext) {
+        InternalPath.Bucket reduce(List<InternalPath.Bucket> buckets, ReduceContext reduceContext) {
             List<InternalAggregations> aggregationsList = new ArrayList<>(buckets.size());
             InternalPath.Bucket reduced = null;
             for (InternalPath.Bucket bucket : buckets) {
@@ -480,7 +476,7 @@ public class InternalPath
         private static final byte ID = 0;
 
         Aggregation(String key, boolean asc) {
-            super(ID, key, asc, new MultiBucketsAggregation.Bucket.SubAggregationComparator<Path.Bucket>(key, asc));
+            super(ID, key, asc, new MultiBucketsAggregation.Bucket.SubAggregationComparator<>(key, asc));
         }
     }
 

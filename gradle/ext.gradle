@@ -1,0 +1,9 @@
+ext {
+    user = 'jprante'
+    pluginName = 'elasticsearch-aggregations'
+    pluginClassname = 'org.xbib.elasticsearch.plugin.aggregations.AggregationPlugin'
+    pluginDescription = 'More aggregations for Elasticsearch'
+    scmUrl = 'https://github.com/' + user + '/' + pluginName
+    scmConnection = 'scm:git:git://github.com/' + user + '/' + pluginName + '.git'
+    scmDeveloperConnection = 'scm:git:git://github.com/' + user + '/' + pluginName + '.git'
+}
